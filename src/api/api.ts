@@ -3,7 +3,7 @@ import systemPrompt from "./systemPrompt.json";
 
 const groq = new Groq({ apiKey: import.meta.env.VITE_AI_API_KEY, dangerouslyAllowBrowser: true });
 
-async function callAPI(userInput: string) {
+async function callAPI(userInput: string): Promise<string> {
 
   try {
     const completion = await groq.chat.completions.create({
@@ -20,7 +20,9 @@ async function callAPI(userInput: string) {
       model: "llama-3.1-70b-versatile", 
     });
     console.log(completion.choices[0].message.content);
+    return completion.choices[0].message.content || "";
   } catch (error) {
+    return `Error calling API: ${error}`;
     console.error("Error calling API:", error);
   }
 }
