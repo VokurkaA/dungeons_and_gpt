@@ -19,9 +19,10 @@ async function callAPI(userInput: string) {
       ],
       model: "llama-3.1-70b-versatile", 
     });
-    console.log(completion.choices[0].message.content);
+    return completion.choices[0].message.content;
   } catch (error) {
     console.error("Error calling API:", error);
+    throw error;
   }
 }
 

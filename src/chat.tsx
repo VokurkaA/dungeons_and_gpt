@@ -1,13 +1,30 @@
-import { Button, IconButton, List, ListItem, ListItemText, Paper, TextField } from '@mui/material';
+import { Button, IconButton, List, ListItem, ListItemText, Paper, TextField, CircularProgress } from '@mui/material';
 import { useEffect, useState } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
+import callAPI from './api/api';
 
 export default function Chat() {
-    const handleSendMessage = () => {
-        if (input.trim()) {
-            setMessages([...messages, input]);
-            setInput('');
+    const [input, setInput] = useState('');
+    const [messages, setMessages] = useState<Array<string>>(localStorage.getItem('messages') ? JSON.parse(localStorage.getItem('messages') || '[]') : []);
+    const [loading, setLoading] = useState(false);
+
+    const handleSendMessage = async () => {
+        if (!input.trim() || loading) return;
+
+        setLoading(true);
+        setMessages([...messages, input]);
+        setInput('');
+
+        try {
+            const response = await callAPI(input);
+            if (response) {
+                setMessages(prev => [...prev, response]);
+            }
+        } catch (error) {
+            console.error('Error sending message:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -15,8 +32,6 @@ export default function Chat() {
         setMessages([]);
     };
 
-    const [input, setInput] = useState('');
-    const [messages, setMessages] = useState<Array<string>>(localStorage.getItem('messages') ? JSON.parse(localStorage.getItem('messages') || '[]') : [])
     useEffect(() => {
         const storedMessages = localStorage.getItem('messages');
         if (storedMessages) {
@@ -47,7 +62,7 @@ export default function Chat() {
                     Clear
                 </Button>
             </div>
-            <Paper
+            {messages.length > 0 && <Paper
                 elevation={1}
                 className="flex-1 p-4 overflow-auto mb-4 max-h-[500px]">
                 {messages && <List>
@@ -65,7 +80,7 @@ export default function Chat() {
                         </ListItem>
                     ))}
                 </List>}
-            </Paper>
+            </Paper>}
             <div className="flex items-center gap-2">
                 <TextField
                     variant="outlined"
@@ -79,13 +94,15 @@ export default function Chat() {
                         }
                     }}
                     size="small"
+                    disabled={loading}
                 />
                 <IconButton
                     color="primary"
                     onClick={handleSendMessage}
                     className="bg-blue-500 hover:bg-blue-600 text-white"
+                    disabled={loading}
                 >
-                    <SendIcon />
+                    {loading ? <CircularProgress size={24} /> : <SendIcon />}
                 </IconButton>
             </div>
         </Paper>
