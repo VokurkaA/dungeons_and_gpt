@@ -1,44 +1,21 @@
 import { useState, useEffect } from 'react';
-import { CssBaseline, ThemeProvider, createTheme, IconButton } from '@mui/material';
+import { CssBaseline, ThemeProvider, IconButton } from '@mui/material';
 import { Brightness4, Brightness7 } from '@mui/icons-material';
 import 'tailwindcss/tailwind.css';
 import Chat from './chat';
 import './index.css';
+import Stats from './stats';
+import { darkTheme, lightTheme } from './themes';
 
 const App = () => {
   const [isDarkMode, setDarkMode] = useState<boolean>(JSON.parse(localStorage.getItem('darkMode') ?? 'false'));
-
+  const [health, setHealth] = useState('100');
+  const [inventory, setInventory] = useState(['Potion', 'Shield']);
+  const [equippedWeapon, setEquippedWeapon] = useState('Sword');
 
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
   }, [isDarkMode]);
-
-  const lightTheme = createTheme({
-    palette: {
-      mode: 'light',
-      primary: {
-        main: '#1976d2',
-      },
-      secondary: {
-        main: '#dc004e',
-      },
-    },
-  });
-
-  const darkTheme = createTheme({
-    palette: {
-      mode: 'dark',
-      primary: {
-        main: '#90caf9',
-      },
-      secondary: {
-        main: '#f48fb1',
-      },
-    },
-  });
-
-
-
   return (
     <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
       <CssBaseline />
@@ -47,6 +24,9 @@ const App = () => {
           {isDarkMode ? <Brightness7 /> : <Brightness4 />}
         </IconButton>
         <Chat />
+        <>
+          <Stats isDarkMode={isDarkMode} health={health} inventory={inventory} equippedWeapon={equippedWeapon}></Stats>
+        </>
       </div>
     </ThemeProvider>
   );
