@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import callAPI from './api/api';
+import {dataFormat} from './dataFormat';
 
 export default function Chat(props: { setUserData: Dispatch<SetStateAction<{ health: number; inventory: never[]; equippedWeapon: string; }>> }) {
     const [input, setInput] = useState('');
@@ -17,8 +18,9 @@ export default function Chat(props: { setUserData: Dispatch<SetStateAction<{ hea
         setInput('');
 
         try {
-            const response = await callAPI(input);
-            const data = JSON.parse(response);
+            // Set data format
+            const data: typeof dataFormat = await callAPI(input);
+
             if (data.story) {
                 setMessages(prev => [...prev, data.story]);
             } if (data.player) {
@@ -47,8 +49,7 @@ export default function Chat(props: { setUserData: Dispatch<SetStateAction<{ hea
                 const initGame = async () => {
                 setLoading(true);
                 try {
-                    const response = await callAPI('start');
-                    const data = JSON.parse(response);
+                    const data = await callAPI('start');
                     if (data.story) {
                         setMessages([data.story]);
                     }
