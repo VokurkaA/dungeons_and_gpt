@@ -1,10 +1,10 @@
 import { Button, IconButton, List, ListItem, ListItemText, Paper, TextField, CircularProgress } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 import DeleteIcon from '@mui/icons-material/Delete';
 import callAPI from './api/api';
 
-export default function Chat() {
+export default function Chat(props: { setUserData: Dispatch<SetStateAction<{ health: number; inventory: never[]; equippedWeapon: string; }>> }) {
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<Array<string>>(localStorage.getItem('messages') ? JSON.parse(localStorage.getItem('messages') || '[]') : []);
     const [loading, setLoading] = useState(false);
@@ -18,8 +18,12 @@ export default function Chat() {
 
         try {
             const response = await callAPI(input);
-            if (response) {
-                setMessages(prev => [...prev, response]);
+            const data = JSON.parse(response);
+            if (data.story) {
+                setMessages(prev => [...prev, data.story]);
+            } if (data.player) {
+                const userData = { health: data.player.health, inventory: data.player.inventory, equippedWeapon: data.player.equipped_weapon }
+                props.setUserData(userData);
             }
         } catch (error) {
             console.error('Error sending message:', error);
@@ -35,7 +39,35 @@ export default function Chat() {
     useEffect(() => {
         const storedMessages = localStorage.getItem('messages');
         if (storedMessages) {
-            setMessages(JSON.parse(storedMessages));
+            const messageData = JSON.parse(storedMessages);
+            if (messageData) {
+                setMessages(JSON.parse(storedMessages));
+            }
+            if (!messageData || messageData.length === 0){
+                const initGame = async () => {
+                setLoading(true);
+                try {
+                    const response = await callAPI('start');
+                    const data = JSON.parse(response);
+                    if (data.story) {
+                        setMessages([data.story]);
+                    }
+                    if (data.player) {
+                        const userData = {
+                            health: data.player.health,
+                            inventory: data.player.inventory,
+                            equippedWeapon: data.player.equipped_weapon
+                        };
+                        props.setUserData(userData);
+                    }
+                } catch (error) {
+                    console.error('Error initializing game:', error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            initGame();
+        }
         }
     }, []);
 

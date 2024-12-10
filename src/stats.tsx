@@ -1,57 +1,54 @@
 import 'tailwindcss/tailwind.css';
 import './index.css';
-import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
-import { darkTheme, lightTheme } from './themes';
+import { Card, LinearProgress, List, ListItem, Typography } from '@mui/material';
+import { LocalHospital, Storage, Inventory2, Shield } from '@mui/icons-material';
 
-interface StatsProps {
-    isDarkMode: boolean
-    health: string
-    inventory: string[]
-    equippedWeapon: string
-}
-const Stats: React.FC<StatsProps> = ({ isDarkMode, health, inventory, equippedWeapon }) => {
+export default function Stats(props: { isDarkMode: boolean, userdata: { health: number, inventory: string[], equippedWeapon: string } }) {
+  return (
+    <Card className={`p-4 m-4 ${props.isDarkMode ? 'bg-gray-800 text-white' : 'bg-white'} 
+      transition-all duration-300 shadow-lg rounded-lg`}>
+      
+      {/* Health Section */}
+      <div className="flex items-center mb-4">
+        <LocalHospital className={`mr-2 ${props.isDarkMode ? 'text-red-400' : 'text-red-600'}`} />
+        <Typography variant="h6" className="flex-1">
+          Health
+        </Typography>
+        <Typography variant="body1">
+          {props.userdata.health}%
+        </Typography>
+      </div>
+      <LinearProgress 
+        variant="determinate" 
+        value={props.userdata.health}
+        className={`mb-6 rounded-full ${props.userdata.health < 30 ? 'color-red-500' : 'color-green-500'}`}
+      />
 
-    return (
-        <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-            <CssBaseline />
-            <div className="">
-                <div className="">
-                    <Card text="Health" value={health} />
-                    <Card
-                        text="Inventory"
-                        value={
-                            inventory.length > 0 ? (
-                                <ul className="list-disc pl-5">
-                                    {inventory.map((item, index) => (
-                                        <li key={index} className="text-lg">
-                                            {item}
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                ''
-                            )
-                        }
-                    />
-                    <Card text="Equipped Weapon" value={equippedWeapon || 'None'} />
-                </div>
-            </div>
-        </ThemeProvider>
-    );
-};
+      {/* Equipped Weapon */}
+      <div className="flex items-center mb-4">
+        <Shield className={`mr-2 ${props.isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+        <Typography variant="subtitle1" className="flex-1">
+          Equipped: {props.userdata.equippedWeapon}
+        </Typography>
+      </div>
 
-interface cardProps{
-    text: string
-    value: string | JSX.Element;
-}
-const Card: React.FC<cardProps> = ({ text, value }) => {
-    return (
-        <div className="p-4 border rounded-lg shadow-sm w-64 bg-gray-50">
-            <p className="text-xl font-bold">{text}</p>
-            <div className="mt-2">{value}</div>
+      {/* Inventory Section */}
+      <div className="mt-4">
+        <div className="flex items-center mb-2">
+          <Inventory2 className={`mr-2 ${props.isDarkMode ? 'text-yellow-400' : 'text-yellow-600'}`} />
+          <Typography variant="subtitle1">
+            Inventory ({props.userdata.inventory.length} items)
+          </Typography>
         </div>
-    );
-};
-
-export default Stats;
+        <List className={`bg-opacity-50 rounded-lg ${props.isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+          {props.userdata.inventory.map((item, index) => (
+            <ListItem key={index} className="px-4 py-2 border-b border-opacity-20 last:border-0">
+              <Storage className="mr-2" fontSize="small" />
+              <Typography variant="body2">{item}</Typography>
+            </ListItem>
+          ))}
+        </List>
+      </div>
+    </Card>
+  );
+}

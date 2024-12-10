@@ -17,13 +17,12 @@ async function callAPI(userInput: string): Promise<string> {
           content: userInput,
         },
       ],
-      model: "llama-3.1-70b-versatile", 
+      model: "llama-3.1-70b-versatile",
     });
-    return completion.choices[0].message.content || "";
+    return completion.choices[0].message.content || '';
   } catch (error) {
-    return `Error calling API: ${error}`;
     console.error("Error calling API:", error);
-    throw error;
+    return `Error calling API: ${error}`;
   }
 }
 
