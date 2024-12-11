@@ -9,13 +9,8 @@ const Chat = () => {
     const { messages, handleSendMessage, isLoading } = useMessages();
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
-
     useEffect(() => {
-        scrollToBottom();
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
     return (
@@ -45,7 +40,7 @@ const Chat = () => {
                         </Typography>
                     </div>
                 )}
-                <div ref={messagesEndRef} /> {/* Anchor div */}
+                <div ref={messagesEndRef} />
             </div>
             <form onSubmit={handleSendMessage} className="mt-4 flex gap-2">
                 <TextField fullWidth value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type a message..." className="bg-gray-700 rounded-xl my-2"
