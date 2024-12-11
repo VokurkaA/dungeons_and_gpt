@@ -8,12 +8,13 @@ import GameData from './components/interfaces/gameData';
 
 const App = () => {
   const { theme } = useTheme();
-  const [userData, setUserData] = useState<GameData>({ health: 100, inventory: [], equippedWeapon: '' });
+  const [userData, setUserData] = useState<GameData>(JSON.parse(localStorage.getItem('userData') || '{"health": 100, "equippedWeapon": "", "inventory": []}') || { health: 100, equippedWeapon: '', inventory: [] });
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className='relative flex h-svh w-svw overflow-clip'>
-        <UserDataContext.Provider value={{userData,setUserData}}>
+        <UserDataContext.Provider value={{ userData, setUserData }}>
           <Sidebar />
           <Chat />
         </UserDataContext.Provider>
