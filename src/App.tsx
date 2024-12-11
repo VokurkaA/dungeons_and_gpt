@@ -1,30 +1,22 @@
-import { useState, useEffect } from 'react';
-import { CssBaseline, ThemeProvider, IconButton } from '@mui/material';
-import { DarkMode, LightMode } from '@mui/icons-material';
-import 'tailwindcss/tailwind.css';
-import Chat from './chat';
-import './index.css';
-import Stats from './stats';
-import { darkTheme, lightTheme } from './themes';
+import { CssBaseline, ThemeProvider } from '@mui/material';
+import Sidebar from './components/sideBar/sidebar';
+import useTheme from './components/sideBar/hooks/theme';
+import Chat from './components/chat/chat';
+import { UserDataContext } from './components/hooks/userDataContext';
+import { useState } from 'react';
+import GameData from './components/interfaces/gameData';
 
 const App = () => {
-  const [data, setData] = useState({ health: 100, inventory: [], equippedWeapon: '' });
-  const [isDarkMode, setDarkMode] = useState<boolean>(JSON.parse(localStorage.getItem('darkMode') ?? 'false'));
-
-  useEffect(() => {
-    localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
-  }, [isDarkMode]);
-
-
+  const { theme } = useTheme();
+  const [userData, setUserData] = useState<GameData>({ health: 100, inventory: [], equippedWeapon: '' });
   return (
-    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
-      <div className='h-svh w-svw flex justify-center items-center'>
-        <IconButton color="inherit" onClick={() => setDarkMode(!isDarkMode)}>
-          {isDarkMode ? <DarkMode /> : <LightMode />}
-        </IconButton>
-        <Chat setUserData={setData}/>
-        <Stats isDarkMode={isDarkMode} userdata={data}></Stats>
+      <div className='relative flex h-svh w-svw overflow-clip'>
+        <UserDataContext.Provider value={{userData,setUserData}}>
+          <Sidebar />
+          <Chat />
+        </UserDataContext.Provider>
       </div>
     </ThemeProvider>
   );

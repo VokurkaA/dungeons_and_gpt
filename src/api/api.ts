@@ -4,7 +4,6 @@ import systemPrompt from "./systemPrompt.json";
 const groq = new Groq({ apiKey: import.meta.env.VITE_AI_API_KEY, dangerouslyAllowBrowser: true });
 
 async function callAPI(userInput: string): Promise<string> {
-
   try {
     const completion = await groq.chat.completions.create({
       messages: [
