@@ -7,22 +7,24 @@ const useMessages = () => {
 
     const { setUserData } = useContext(UserDataContext);
 
-    async function fetchApiData(prompt: string): Promise<Message | undefined> {
+    async function fetchApiData(prompt: string): Promise<void> {
         try {
             const response = await callAPI(prompt);
             const data = JSON.parse(response);
             if (data.player) {
                 const userData = { health: data.player.health, inventory: data.player.inventory, equippedWeapon: data.player.equipped_weapon };
                 setUserData(userData);
-            } if (data.story) {
-                return { text: data.story, sender: 'system' };
+                localStorage.setItem('userData', JSON.stringify(userData));
+            } 
+            if (data.story) {
+                setMessages(prevMessages => [...prevMessages, { text: data.story, sender: 'system' }]);
             }
         } catch (error) {
             console.error('Error sending message:', error);
         }
     }
 
-    const getInitialMessages = () => {
+    const loadInitialMessages = () => {
         const storedMessages = localStorage.getItem('messages');
         if (storedMessages && storedMessages !== 'undefined') {
             try {
@@ -32,20 +34,14 @@ const useMessages = () => {
             }
         }
 
-        fetchApiData('start').then((response) => {
-            if (response) {
-                setMessages([...messages, response]);
-            }
-        });
-
+        fetchApiData('start');
         return [];
     };
 
-    const [messages, setMessages] = useState<Array<Message>>(getInitialMessages);
+    const [messages, setMessages] = useState<Array<Message>>(loadInitialMessages);
 
     useEffect(() => {
         localStorage.setItem('messages', JSON.stringify(messages));
-        console.log(JSON.parse(localStorage.getItem('messages') || '[]'));
     }, [messages]);
 
     const handleSendMessage = async (e: React.FormEvent) => {
@@ -58,11 +54,7 @@ const useMessages = () => {
         setMessages(prevMessages => [...prevMessages, { text: input, sender: 'user' }]);
 
 
-        fetchApiData(input).then((response) => {
-            if (response) {
-                setMessages(prevMessages => [...prevMessages, response]);
-            }
-        });
+        fetchApiData(input);
     };
     return { messages, handleSendMessage };
 };
