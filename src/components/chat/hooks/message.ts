@@ -6,8 +6,10 @@ import { UserDataContext } from "../../hooks/userDataContext";
 const useMessages = () => {
 
     const { setUserData } = useContext(UserDataContext);
+    const [isLoading, setIsLoading] = useState(false);
 
     async function fetchApiData(prompt: string): Promise<void> {
+        setIsLoading(true);
         try {
             const response = await callAPI(prompt);
             const data = JSON.parse(response);
@@ -21,6 +23,8 @@ const useMessages = () => {
             }
         } catch (error) {
             console.error('Error sending message:', error);
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -48,15 +52,15 @@ const useMessages = () => {
         e.preventDefault();
         const inputElement = (e.target as HTMLFormElement).elements[0] as HTMLInputElement;
         const input = inputElement.value;
-        if (!input.trim()) return;
+        if (!input.trim() || isLoading) return;
 
         inputElement.value = '';
         setMessages(prevMessages => [...prevMessages, { text: input, sender: 'user' }]);
 
-
         fetchApiData(input);
     };
-    return { messages, handleSendMessage };
+
+    return { messages, handleSendMessage, isLoading };
 };
 
 export default useMessages;

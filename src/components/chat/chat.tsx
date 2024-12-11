@@ -1,19 +1,22 @@
 import { Box, Typography, TextField } from '@mui/material';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Send } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import useMessages from './hooks/message';
 
 const Chat = () => {
     const [input, setInput] = useState('');
-    const { messages, handleSendMessage } = useMessages();
+    const { messages, handleSendMessage, isLoading } = useMessages();
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    // const [loading, setLoading] = useState(false);
 
-    // const scrollToBottom = () => {
-    //     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    // }
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     return (
         <Box className="flex flex-col flex-1 p-4 space-y-4 bg-gray-800">
@@ -35,6 +38,13 @@ const Chat = () => {
                         </div>
                     </div>
                 ))}
+                {isLoading && (
+                    <div className="flex justify-center">
+                        <Typography variant="body1" className="text-gray-400">
+                            Loading...
+                        </Typography>
+                    </div>
+                )}
                 <div ref={messagesEndRef} /> {/* Anchor div */}
             </div>
             <form onSubmit={handleSendMessage} className="mt-4 flex gap-2">
