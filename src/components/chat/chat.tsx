@@ -1,7 +1,7 @@
 import { Box, Typography, TextField } from '@mui/material';
 import { useState, useRef } from 'react';
 import { Send } from '@mui/icons-material';
-import { IconButton, Button } from '@mui/material';
+import { IconButton } from '@mui/material';
 import useMessages from './hooks/message';
 
 const Chat = () => {
@@ -14,11 +14,6 @@ const Chat = () => {
     // const scrollToBottom = () => {
     //     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     // }
-
-    const handleClearAndReload = () => {
-        localStorage.clear();
-        window.location.reload();
-    };
 
     return (
         <Box className="flex flex-col flex-1 p-4 space-y-4 bg-gray-800">
@@ -50,9 +45,6 @@ const Chat = () => {
                     <Send />
                 </IconButton>
             </form>
-            <Button onClick={handleClearAndReload} variant="contained" color="secondary">
-                Clear and Reload
-            </Button>
         </Box>
     );
 };
