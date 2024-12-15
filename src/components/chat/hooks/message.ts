@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import Message from "../interfaces/message";
 import callAPI from "../../../api/api";
 import { UserDataContext } from "../../hooks/userDataContext";
+import {dataFormat} from './../../../dataFormat';
 
 const useMessages = () => {
 
@@ -11,8 +12,7 @@ const useMessages = () => {
     async function fetchApiData(prompt: string): Promise<void> {
         setIsLoading(true);
         try {
-            const response = await callAPI(prompt);
-            const data = JSON.parse(response);
+            const data: typeof dataFormat = await callAPI(prompt);
             if (data.player) {
                 const userData = { health: data.player.health, inventory: data.player.inventory, equippedWeapon: data.player.equipped_weapon };
                 setUserData(userData);
