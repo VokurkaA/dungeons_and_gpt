@@ -5,7 +5,7 @@ import 'tailwindcss/tailwind.css';
 import Chat from './chat';
 import './styles/index.css';
 import Stats from './stats';
-import { darkTheme, lightTheme } from './styles/themes';
+import { darkTheme, lightTheme } from './themes';
 
 const App = () => {
   const [data, setData] = useState({ health: 100, inventory: [], equippedWeapon: '' });
