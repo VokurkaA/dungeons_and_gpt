@@ -3,9 +3,9 @@ import { CssBaseline, ThemeProvider, IconButton } from '@mui/material';
 import { DarkMode, LightMode } from '@mui/icons-material';
 import 'tailwindcss/tailwind.css';
 import Chat from './chat';
-import './index.css';
+import './styles/index.css';
 import Stats from './stats';
-import { darkTheme, lightTheme } from './themes';
+import { darkTheme, lightTheme } from './styles/themes';
 
 const App = () => {
   const [data, setData] = useState({ health: 100, inventory: [], equippedWeapon: '' });

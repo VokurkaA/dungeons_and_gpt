@@ -1,5 +1,5 @@
 import 'tailwindcss/tailwind.css';
-import './index.css';
+import './styles/index.css';
 import { Card, LinearProgress, List, ListItem, Typography } from '@mui/material';
 import { LocalHospital, Storage, Inventory2, Shield } from '@mui/icons-material';
 

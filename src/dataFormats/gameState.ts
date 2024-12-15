@@ -1,4 +1,4 @@
-export const dataFormat = {
+export const gameState = {
     story: '',
     player: {
         health: 0,

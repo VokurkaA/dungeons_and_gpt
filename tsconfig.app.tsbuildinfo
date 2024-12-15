@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/chat.tsx","./src/main.tsx","./src/stats.tsx","./src/themes.tsx","./src/vite-env.d.ts","./src/api/api.ts"],"version":"5.7.2"}
+{"root":["./src/app.tsx","./src/chat.tsx","./src/main.tsx","./src/stats.tsx","./src/vite-env.d.ts","./src/api/api.ts","./src/dataformats/gamestate.ts","./src/styles/themes.tsx"],"version":"5.7.2"}
