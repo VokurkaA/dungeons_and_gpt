@@ -1,11 +1,16 @@
 import Groq from "groq-sdk";
 import systemPrompt from "./systemPrompt.json";
-import { gameState } from "../dataFormats/gameState";
+import { gameState } from "../components/interfaces/gameState";
 import { updateData } from "../db/db";
 
 const groq = new Groq({ apiKey: import.meta.env.VITE_AI_API_KEY, dangerouslyAllowBrowser: true });
 
-async function callAPI(userInput: string, firstMessage: boolean): Promise<typeof gameState> {
+async function callAPI(userInput: string): Promise<typeof gameState> {
+
+  let firstMessage = false;
+  if(userInput === 'start'){
+    firstMessage = true;
+  }
 
   const messages = await createMessages(userInput, firstMessage);
 
@@ -14,8 +19,12 @@ async function callAPI(userInput: string, firstMessage: boolean): Promise<typeof
 
       // API request
       const completion = await groq.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
-        messages: messages
+        // model: "llama-3.3-70b-versatile",
+        // model: "llama-3.3-70b-specdec",
+        model: "llama3-groq-70b-8192-tool-use-preview",
+        messages: messages,
+        max_tokens: 400,
+        temperature: 0.7
       });
 
       // JSON validation
@@ -39,8 +48,8 @@ async function callAPI(userInput: string, firstMessage: boolean): Promise<typeof
       updateData(previousMessages, json.story, json.player.health, json.player.inventory, json.player.equipped_weapon);      
 
       return json;
-    } catch {
-      console.error("Bad JSON at iteration: ", i);
+    } catch{
+      console.warn("Bad JSON at iteration: ", i);
     }
   }
 
@@ -77,12 +86,9 @@ async function createMessages(userInput: string, firstMessage: boolean) {
     messages.push({ role: "system", content: systemPrompt["1"] });
   }
   messages.push({ role: "user", content: userInput });
-
+  
   return messages;
 
 }
-
-
-
 
 export default callAPI;

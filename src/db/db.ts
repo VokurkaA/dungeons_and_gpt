@@ -14,11 +14,11 @@ async function updateData(messages: string[], newMessage: string, health: number
       })
     });
 }
-
 async function removeData() {
-    await fetch("http://localhost:3000/me", {
-      method: "PUT",
-      headers: {
+   try {
+     await fetch("http://localhost:3000/me", {
+       method: "PUT",
+       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
@@ -30,7 +30,10 @@ async function removeData() {
         }
       })
     });
+  } catch (error) {
+    console.error(error);
   }
+}
 
   async function getData() {
     const response = await fetch("http://localhost:3000/me");

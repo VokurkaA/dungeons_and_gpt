@@ -2,7 +2,7 @@ import { Box, Typography, Chip } from '@mui/material';
 import { useContext } from 'react';
 import { UserDataContext } from '../../hooks/userDataContext';
 export default function Inventory() {
-    const {userData} = useContext(UserDataContext);
+    const { userData } = useContext(UserDataContext);
 
     return (
         <Box className="max-w-sm p-4 rounded-lg shadow-md bg-gray-800 space-y-2">
@@ -13,7 +13,7 @@ export default function Inventory() {
                 Inventory
             </Typography>
             <div className="flex flex-wrap gap-2 max-h-96 overflow-y-auto">
-                {userData && userData.inventory.map((item, index) => (
+                {userData && userData.inventory && userData.inventory.map((item, index) => (
                     <Chip
                         key={index}
                         label={item}
