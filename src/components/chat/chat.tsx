@@ -42,7 +42,7 @@ const Chat = () => {
                 )}
                 <div ref={messagesEndRef} />
             </div>
-            <form onSubmit={handleSendMessage} className="mt-4 flex gap-2">
+            <form onSubmit={(e) => handleSendMessage(e, input, setInput)} className="mt-4 flex gap-2">
                 <TextField fullWidth value={input} onChange={(e) => setInput(e.target.value)} placeholder="Type a message..." className="bg-gray-700 rounded-xl my-2"
                     slotProps={{ input: { className: "text-gray-100 placeholder:text-gray-400" } }}
                 />
