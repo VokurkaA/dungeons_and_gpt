@@ -19,9 +19,8 @@ async function callAPI(userInput: string): Promise<typeof gameState> {
 
       // API request
       const completion = await groq.chat.completions.create({
-        // model: "llama-3.3-70b-versatile",
-        // model: "llama-3.3-70b-specdec",
-        model: "llama3-groq-70b-8192-tool-use-preview",
+        model: "llama-3.3-70b-versatile",
+        // model: "llama3-groq-70b-8192-tool-use-preview",
         messages: messages,
         max_tokens: 400,
         temperature: 0.7
@@ -46,7 +45,7 @@ async function callAPI(userInput: string): Promise<typeof gameState> {
 
       // Updating DB
       updateData(previousMessages, json.story, json.player.health, json.player.inventory, json.player.equipped_weapon);      
-
+      console.log('AI answered');
       return json;
     } catch{
       console.warn("Bad JSON at iteration: ", i);

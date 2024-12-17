@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import callAPI from "../../../api/api";
 import Message from "./../interfaces/message";
 import { UserDataContext } from "../../hooks/userDataContext";
@@ -10,12 +10,16 @@ const useMessages = () => {
     const { setUserData } = useContext(UserDataContext);
     const [isLoading, setIsLoading] = useState(false);
     const [messages, setMessages] = useState<Array<Message>>([]);
+    const hasLoaded = useRef(false);
 
     const fetchData = async () : Promise<string[]> => {
         const storedMessages = await getData();
         return storedMessages.story;
     };
     useEffect(() => {
+        if(hasLoaded.current) {
+            return;
+        }
         setMessages([]);
         const storedMessages : Message[] = [];
         fetchData().then((data) => {
@@ -33,6 +37,7 @@ const useMessages = () => {
         if(storedMessages.length < 1){
             fetchApiData('start');
         }
+        hasLoaded.current = true;
     }, []);
 
     async function fetchApiData(prompt: string): Promise<void> {

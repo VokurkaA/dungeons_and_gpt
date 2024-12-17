@@ -9,8 +9,11 @@ const NewChat = () => {
     const { setUserData } = useContext(UserDataContext);
     const muiTheme = useMuiTheme();
     
-    const handleClearAndReload = () => {
+    const removeDataCall = async () => {
         removeData();
+    }
+    const handleClearAndReload = () => {
+        removeDataCall();
         setUserData({} as GameData);
         window.location.reload();
     };
