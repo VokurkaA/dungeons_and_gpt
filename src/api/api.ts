@@ -1,32 +1,93 @@
 import Groq from "groq-sdk";
 import systemPrompt from "./systemPrompt.json";
-import {dataFormat} from './../dataFormat';
+import { gameState } from "../components/interfaces/gameState";
+import { updateData } from "../db/db";
 
 const groq = new Groq({ apiKey: import.meta.env.VITE_AI_API_KEY, dangerouslyAllowBrowser: true });
 
-async function callAPI(userInput: string): Promise<typeof dataFormat> {
+async function callAPI(userInput: string): Promise<typeof gameState> {
 
-  for(let i = 0; i < 5; i++) {
-    try {
-      const completion = await groq.chat.completions.create({
-        messages: [
-          {
-            role: "system",
-            content: systemPrompt["1"],
-          },
-          {
-            role: "user",
-          content: userInput,
-        },
-      ],
-        model: "llama-3.1-70b-versatile",
-      });
-      // Check json validity
-      return JSON.parse(completion.choices[0].message.content || '');
-    } 
-    catch(error) {console.log(error);}
+  let firstMessage = false;
+  if(userInput === 'start'){
+    firstMessage = true;
   }
-  throw new Error('Failed to generate response');
+
+  const messages = await createMessages(userInput, firstMessage);
+
+  for (let i = 0; i < 5; i++) {
+    try {
+
+      // API request
+      const completion = await groq.chat.completions.create({
+        model: "llama-3.3-70b-versatile",
+        // model: "llama3-groq-70b-8192-tool-use-preview",
+        messages: messages,
+        max_tokens: 400,
+        temperature: 0.7
+      });
+
+      // JSON validation
+      const json = JSON.parse(completion.choices[0].message.content || "");
+      if (!json.story || !json.player) {
+        throw new Error("Invalid JSON format from AI");
+      }
+
+      // Creating previous messages array
+      const previousMessages: string[] = [];
+      messages.forEach((message: Groq.Chat.Completions.ChatCompletionMessageParam) => {
+        if (typeof message.content === "string") {
+          previousMessages.push(message.content);
+        }
+        else{
+          console.error("Message content is not a string:", message.content);
+        }
+      });
+
+      // Updating DB
+      updateData(previousMessages, json.story, json.player.health, json.player.inventory, json.player.equipped_weapon);      
+      console.log('AI answered');
+      return json;
+    } catch{
+      console.warn("Bad JSON at iteration: ", i);
+    }
+  }
+
+  throw new Error("Failed to generate response");
+}
+async function createMessages(userInput: string, firstMessage: boolean) {
+
+  const messages: Groq.Chat.Completions.ChatCompletionMessageParam[] = [];
+
+  let previousMessages = { story: [], player: { health: 0, inventory: [], equipped_weapon: "" } };
+
+  
+  if (!firstMessage) {
+    previousMessages = await (await fetch("http://localhost:3000/me")).json();
+
+    let playersRound = true;
+    let i = 0;
+    previousMessages.story.forEach((message: string) => {
+      if(i === 0) {
+        messages.push({ role: "system", content: message });
+        i++;
+      }
+      else if (playersRound) {
+        messages.push({ role: "user", content: message });
+        playersRound = false;
+      } else {
+        messages.push({ role: "assistant", content: message });
+        playersRound = true;
+      }
+    });
+  }
+  else{
+    // Add system prompt to start of the messages array
+    messages.push({ role: "system", content: systemPrompt["1"] });
+  }
+  messages.push({ role: "user", content: userInput });
+  
+  return messages;
+
 }
 
 export default callAPI;

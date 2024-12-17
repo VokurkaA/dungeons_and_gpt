@@ -1,14 +1,26 @@
+import { useEffect, useState } from 'react';
 import { CssBaseline, ThemeProvider } from '@mui/material';
+import Chat from './components/chat/chat';
 import Sidebar from './components/sideBar/sidebar';
 import useTheme from './components/sideBar/hooks/theme';
-import Chat from './components/chat/chat';
 import { UserDataContext } from './components/hooks/userDataContext';
-import { useState } from 'react';
 import GameData from './components/interfaces/gameData';
+import {getData} from './db/db';
 
 const App = () => {
   const { theme } = useTheme();
-  const [userData, setUserData] = useState<GameData>(JSON.parse(localStorage.getItem('userData') || '{"health": 100, "equippedWeapon": "", "inventory": []}') || { health: 100, equippedWeapon: '', inventory: [] });
+  const [userData, setUserData] = useState<GameData>({} as GameData);
+
+  // Load the data from the database
+  useEffect(() => {
+    getData().then((data) => {
+      const GameData: GameData = {} as GameData;
+      GameData.health = data.player.health;
+      GameData.inventory = data.player.inventory;
+      GameData.equippedWeapon = data.player.equipped_weapon;
+      setUserData(GameData);
+    });
+  })
 
   return (
     <ThemeProvider theme={theme}>

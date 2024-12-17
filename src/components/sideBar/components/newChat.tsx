@@ -3,13 +3,17 @@ import { DeleteOutline } from "@mui/icons-material";
 import { useContext } from "react";
 import { UserDataContext } from "../../hooks/userDataContext";
 import GameData from "../../interfaces/gameData";
+import {removeData} from '../../../db/db';
 
 const NewChat = () => {
     const { setUserData } = useContext(UserDataContext);
     const muiTheme = useMuiTheme();
     
+    const removeDataCall = async () => {
+        removeData();
+    }
     const handleClearAndReload = () => {
-        localStorage.clear();
+        removeDataCall();
         setUserData({} as GameData);
         window.location.reload();
     };
